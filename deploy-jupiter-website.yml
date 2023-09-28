@@ -52,5 +52,19 @@
         enabled: yes
         name: httpd
         state: started
+    - hosts: testsv
+      gather_facts: no
+      become: yes
+ 
+      tasks:
+    # here yum running under python2 without errors
+      - name: task1 
+        yum:
+        list: curl  
+
+    # here yum running under python3
+    - name: task2 
+      yum:
+        list: curl
       vars:
-        ansible_python_interpreter: /usr/bin/dnf
+        ansible_python_interpreter: /usr/bin/python3
