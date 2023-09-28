@@ -46,8 +46,3 @@
       file: 
         path: /var/www/html/jupiter-main.zip
         state: absent
-    - name: task2 
-      yum:
-        list: curl
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
