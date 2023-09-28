@@ -46,23 +46,6 @@
       file: 
         path: /var/www/html/jupiter-main.zip
         state: absent
-
-    - name: start apache server, if not started
-      ansible.builtin.service:
-        enabled: yes
-        name: httpd
-        state: started
-    - hosts: testsv
-      gather_facts: no
-      become: yes
- 
-      tasks:
-    # here yum running under python2 without errors
-      - name: task1 
-        yum:
-        list: curl  
-
-    # here yum running under python3
     - name: task2 
       yum:
         list: curl
