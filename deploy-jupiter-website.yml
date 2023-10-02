@@ -22,7 +22,7 @@
 
     - name: download web files from github
       get_url:
-        url: https://github.com/Lubern5/Ansible-Playbooks/jupiter/archive/refs/heads/main.zip 
+        url:  https://github.com/Lubern5/Ansible-Playbooks/archive/main.zip
         dest: /var/www/html
 
     - name: unzip the zip folder
