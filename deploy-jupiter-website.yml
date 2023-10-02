@@ -33,16 +33,16 @@
 
     - name: copy webfiles from the jupiter-main directory to the html directory
       copy: 
-        src: /var/www/html/main.zip
+        src: /var/www/html/jupiter-main.zip
         dest: /var/www/html
         remote_src: yes
 
     - name: remove the jupiter-main directory
       file: 
-        path: /var/www/html/main.zip
+        path: /var/www/html/jupiter-main.zip
         state: absent
 
     - name: remove the jupiter-main.zip folder
       file: 
-        path: /var/www/html/main.zip
+        path: /var/www/html/jupiter-main.zip
         state: absent
