@@ -27,7 +27,7 @@
 
     - name: unzip the zip folder
       ansible.builtin.unarchive:
-        src: /var/www/html/jupiter-main.zip
+        src: /var/www/html/main.zip
         dest: /var/www/html
         remote_src: yes
 
@@ -39,7 +39,7 @@
 
     - name: remove the jupiter-main directory
       file: 
-        path: /var/www/html/jupiter-main
+        path: /var/www/html/main.zip
         state: absent
 
     - name: remove the jupiter-main.zip folder
