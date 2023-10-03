@@ -16,8 +16,10 @@
         name: httpd
         state: latest
 
-    - name: Set working directory to /var/www/html
-      ansible.builtin.shell: cd /var/www/html
+    - name: Create the /var/www/html directory if it doesn't exist
+      ansible.builtin.file:
+        path: /var/www/html
+        state: directory
 
     - name: download web files from github
       get_url:
@@ -30,13 +32,8 @@
         dest: /var/www/html
         remote_src: yes
 
-    - name: remove the jupiter-main directory
-      file:
-        path: /var/www/html/jupiter-main
-        state: absent
-
     - name: remove the main.zip file
-      file:
+      ansible.builtin.file:
         path: /var/www/html/main.zip
         state: absent
 
