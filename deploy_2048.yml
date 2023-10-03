@@ -1,6 +1,6 @@
 ---
 - name: Install Nginx and deploy 2048 game
-  hosts: your_target_server
+  hosts: all
   become: yes  # This will run the tasks as sudo
 
   tasks:
