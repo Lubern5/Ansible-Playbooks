@@ -3,13 +3,22 @@
   hosts: all
   become: yes
   tasks:
+    - name: Remove conflicting curl packages
+      package:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - curl-minimal
+        - curl
+
     - name: Update apt cache
-      dnf:
-        update_cache: yes
+      yum:
+        name: '*'
+        state: present
       become: yes
 
     - name: Install required packages
-      dnf:
+      yum:
         name:
           - nginx
           - zip
@@ -34,14 +43,9 @@
       args:
         executable: /bin/bash
 
-    - name: Expose port 80
-      ufw:
-        rule: allow
-        port: '80/tcp'
-      become: yes
-
-    - name: Start Nginx
-      service:
+    - name: Ensure Nginx service is enabled and running
+      systemd:
         name: nginx
+        enabled: yes
         state: started
       become: yes
