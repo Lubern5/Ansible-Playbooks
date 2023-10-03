@@ -9,7 +9,7 @@
       changed_when: false
       ignore_errors: yes
 
-    - name: Install required packages (Python 2.7)
+    - name: Install required packages (Python 3)
       yum:
         name:
           - nginx
@@ -17,7 +17,7 @@
           - curl
         state: present
       become: yes
-      when: "'Python 2.7' in python_version.stderr|default('')"
+      when: "'Python 3' in python_version.stderr|default('')"
 
     - name: Install required packages using dnf (Python 3)
       dnf:
@@ -27,7 +27,7 @@
           - curl
         state: present
       become: yes
-      when: "'Python 2.7' not in python_version.stderr|default('')"
+      when: "'Python 3' not in python_version.stderr|default('')"
 
     - name: Configure Nginx
       lineinfile:
