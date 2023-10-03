@@ -1,15 +1,11 @@
 ---
 - name: Install Nginx and deploy 2048 game
-  hosts: all
+  hosts: your_target_server
   become: yes  # This will run the tasks as sudo
 
   tasks:
-    - name: Update APT package cache
-      dnf:
-        update_cache: yes
-
     - name: Install required packages (Nginx, zip, curl)
-      dnf:
+      yum:
         name:
           - nginx
           - zip
@@ -29,11 +25,11 @@
         cd /var/www/html/ && unzip master.zip && mv 2048-master/* . && rm -rf 2048-master master.zip
       become: yes
 
-    - name: Expose port 80 (HTTP) in the firewall
-      ufw:
-        rule: allow
-        port: 80
-        proto: tcp
+    - name: Open port 80 (HTTP) in the firewall
+      firewalld:
+        port: 80/tcp
+        permanent: yes
+        state: enabled
       become: yes
 
     - name: Start Nginx service
