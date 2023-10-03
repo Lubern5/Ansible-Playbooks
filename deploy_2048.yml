@@ -31,7 +31,7 @@
 
     - name: Configure Nginx
       lineinfile:
-        path: /etc/nginx/nginx.conf
+        path: /var/www/html/
         line: 'daemon off;'
       become: yes
 
