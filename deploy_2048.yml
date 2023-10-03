@@ -1,54 +1,44 @@
 ---
-- name: Install Nginx and Deploy 2048 Game
+- name: Install Nginx and deploy 2048 game
   hosts: all
-  become: yes
+  become: yes  # This will run the tasks as sudo
+
   tasks:
-    - name: Check Python version
-      command: python --version
-      register: python_version
-      changed_when: false
-      ignore_errors: yes
+    - name: Update APT package cache
+      apt:
+        update_cache: yes
 
-    - name: Install required packages (Python 3)
-      yum:
+    - name: Install required packages (Nginx, zip, curl)
+      apt:
         name:
           - nginx
           - zip
           - curl
         state: present
       become: yes
-      when: "'Python 3' in python_version.stderr|default('')"
-
-    - name: Install required packages using dnf (Python 3)
-      dnf:
-        name:
-          - nginx
-          - zip
-          - curl
-        state: present
-      become: yes
-      when: "'Python 3' not in python_version.stderr|default('')"
 
     - name: Configure Nginx
       lineinfile:
         path: /etc/nginx/nginx.conf
-        line: 'daemon off;'
+        line: "daemon off;"
       become: yes
 
     - name: Download and deploy 2048 game
       shell: |
-        cd /var/www/html/
-        curl -o master.zip -L https://codeload.github.com/gabrielecirulli/2048/zip/master
-        unzip -o master.zip
-        mv 2048-master/* .
-        rm -rf 2048-master master.zip
+        curl -o /var/www/html/master.zip -L https://codeload.github.com/gabrielecirulli/2048/zip/master
+        cd /var/www/html/ && unzip master.zip && mv 2048-master/* . && rm -rf 2048-master master.zip
       become: yes
-      args:
-        executable: /bin/bash
 
-    - name: Ensure Nginx service is enabled and running
-      systemd:
+    - name: Expose port 80 (HTTP) in the firewall
+      ufw:
+        rule: allow
+        port: 80
+        proto: tcp
+      become: yes
+
+    - name: Start Nginx service
+      service:
         name: nginx
-        enabled: yes
         state: started
       become: yes
+
