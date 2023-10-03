@@ -3,13 +3,15 @@
   hosts: all
   become: yes
   tasks:
-    - name: Remove conflicting curl packages
-      package:
-        name: "{{ item }}"
-        state: absent
-      with_items:
-        - curl-minimal
-        - curl
+    - name: Install required packages using dnf
+      dnf:
+        name:
+          - nginx
+          - zip
+          - curl
+        state: present
+      become: yes
+
 
     - name: Update apt cache
       dnf:
