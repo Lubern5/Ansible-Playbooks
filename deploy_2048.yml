@@ -12,13 +12,13 @@
         - curl
 
     - name: Update apt cache
-      yum:
+      dnf:
         name: '*'
         state: present
       become: yes
 
     - name: Install required packages
-      yum:
+      dnf:
         name:
           - nginx
           - zip
