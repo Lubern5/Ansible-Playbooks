@@ -5,14 +5,14 @@
 
   tasks:
     - name: Install required packages (Nginx, zip, curl)
-      package:
+      dnf:
         name:
           - nginx
           - zip
           - curl
         state: present
       become: yes
-
+   
     - name: Configure Nginx
       lineinfile:
         path: /etc/nginx/nginx.conf
@@ -20,24 +20,9 @@
       become: yes
 
     - name: Download and deploy 2048 game
-      get_url:
-        url: https://codeload.github.com/gabrielecirulli/2048/zip/master
-        dest: /tmp/2048.zip
-      become: yes
-
-    - name: Extract 2048 game
-      unarchive:
-        src: /tmp/2048.zip
-        dest: /var/www/html/
-        remote_src: yes
-      become: yes
-
-    - name: Set correct ownership and permissions
-      file:
-        path: /var/www/html/
-        owner: nginx
-        group: nginx
-        recurse: yes
+      shell: |
+        curl -o /var/www/html/master.zip -L https://codeload.github.com/gabrielecirulli/2048/zip/master
+        cd /var/www/html/ && unzip master.zip && mv 2048-master/* . && rm -rf 2048-master master.zip
       become: yes
 
     - name: Open port 80 (HTTP) in the firewall
@@ -52,3 +37,5 @@
         name: nginx
         state: started
       become: yes
+
+    # ... (rest of your playbook)
