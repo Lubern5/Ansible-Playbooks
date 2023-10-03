@@ -1,0 +1,47 @@
+---
+- name: Install Nginx and Deploy 2048 Game
+  hosts: your_target_hosts
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      become: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - nginx
+          - zip
+          - curl
+        state: present
+      become: yes
+
+    - name: Configure Nginx
+      lineinfile:
+        path: /etc/nginx/nginx.conf
+        line: 'daemon off;'
+      become: yes
+
+    - name: Download and deploy 2048 game
+      shell: |
+        cd /var/www/html/
+        curl -o master.zip -L https://codeload.github.com/gabrielecirulli/2048/zip/master
+        unzip -o master.zip
+        mv 2048-master/* .
+        rm -rf 2048-master master.zip
+      become: yes
+      args:
+        executable: /bin/bash
+
+    - name: Expose port 80
+      ufw:
+        rule: allow
+        port: '80/tcp'
+      become: yes
+
+    - name: Start Nginx
+      service:
+        name: nginx
+        state: started
+      become: yes
