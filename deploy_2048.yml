@@ -4,12 +4,12 @@
   become: yes
   tasks:
     - name: Update apt cache
-      apt:
+      dnf:
         update_cache: yes
       become: yes
 
     - name: Install required packages
-      apt:
+      dnf:
         name:
           - nginx
           - zip
