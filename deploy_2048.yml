@@ -1,6 +1,6 @@
 ---
 - name: Install Nginx and Deploy 2048 Game
-  hosts: your_target_hosts
+  hosts: all
   become: yes
   tasks:
     - name: Update apt cache
