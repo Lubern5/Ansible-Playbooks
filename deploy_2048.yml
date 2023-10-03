@@ -3,23 +3,23 @@
   hosts: all
   become: yes
   tasks:
-    - name: Install required packages using dnf
-      dnf:
-        name:
-          - nginx
-          - zip
-          - curl
-        state: present
-      become: yes
-
-
-    - name: Update apt cache
-      dnf:
-        name: '*'
-        state: present
-      become: yes
+    - name: Check Python version
+      command: python --version
+      register: python_version
+      changed_when: false
+      ignore_errors: yes
 
     - name: Install required packages
+      yum:
+        name:
+          - nginx
+          - zip
+          - curl
+        state: present
+      become: yes
+      when: "'Python 2.7' in python_version.stderr"
+
+    - name: Install required packages using dnf (Python 3)
       dnf:
         name:
           - nginx
@@ -27,6 +27,7 @@
           - curl
         state: present
       become: yes
+      when: "'Python 2.7' not in python_version.stderr"
 
     - name: Configure Nginx
       lineinfile:
@@ -51,3 +52,4 @@
         enabled: yes
         state: started
       become: yes
+
