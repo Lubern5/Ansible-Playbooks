@@ -23,18 +23,18 @@
 
     - name: download web files from github
       get_url:
-        url: https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
-        dest: /var/www/html/main.zip
+        url: https://codeload.github.com/gabrielecirulli/2048/zip/master
+        dest: /var/www/html/master.zip
 
     - name: unzip the zip folder
       ansible.builtin.unarchive:
-        src: /var/www/html/main.zip
+        src: /var/www/html/master.zip
         dest: /var/www/html
         remote_src: yes
 
-    - name: remove the main.zip file
+    - name: remove the master.zip file
       ansible.builtin.file:
-        path: /var/www/html/main.zip
+        path: /var/www/html/master.zip
         state: absent
 
     - name: start apache server, if not started
