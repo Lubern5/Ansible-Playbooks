@@ -5,11 +5,11 @@
 
   tasks:
     - name: Update APT package cache
-      apt:
+      dnf:
         update_cache: yes
 
     - name: Install required packages (Nginx, zip, curl)
-      apt:
+      dnf:
         name:
           - nginx
           - zip
