@@ -19,18 +19,19 @@
       command: unzip main.zip
       args:
         chdir: /var/www/html
-      when: not unzip_check.stat.exists
+      register: unzip_check
+      changed_when: not unzip_check.failed
 
     - name: Check if Jupiter directory exists
       stat:
         path: /var/www/html/jupiter-main
-      register: unzip_check
+      register: jupiter_dir_check
 
     - name: Copy files to web directory
       command: cp -r /var/www/html/jupiter-main/* /var/www/html/
       args:
         chdir: /var/www/html
-      when: unzip_check.stat.exists
+      when: not jupiter_dir_check.stat.exists
 
     - name: Remove temporary files
       file:
