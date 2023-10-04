@@ -14,13 +14,19 @@
 
     - name: Download Jupiter repository
       command: wget https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
+      register: download_result
+      ignore_errors: yes  # Ignore errors to allow handling the absence of the file
+
+    - name: Check if main.zip exists
+      stat:
+        path: /var/www/html/main.zip
+      register: main_zip_check
 
     - name: Unzip Jupiter repository
       command: unzip main.zip
       args:
         chdir: /var/www/html
-      register: unzip_check
-      changed_when: not unzip_check.failed
+      when: download_result|failed == false and main_zip_check.stat.exists
 
     - name: Check if Jupiter directory exists
       stat:
