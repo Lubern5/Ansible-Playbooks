@@ -1,5 +1,4 @@
 ---
-
 - name: deploy jupiter website
   hosts: all
   become: yes
@@ -22,35 +21,33 @@
 
     - name: download web files from github
       get_url:
-        url:  https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
-        dest: /var/www/html
+        url: https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
+        dest: /var/www/html/main.zip
 
     - name: unzip the zip folder
       ansible.builtin.unarchive:
-        src: /var/www/html/jupiter-main.zip
+        src: /var/www/html/main.zip
         dest: /var/www/html
         remote_src: yes
 
-    - name: copy webfiles from the jupiter-main directory to the html directory
-      copy: 
-        src: /var/www/html/jupiter-main.zip
-        dest: /var/www/html
+    - name: copy web files from the jupiter-main directory to the html directory
+      copy:
+        src: /var/www/html/jupiter-main/*
+        dest: /var/www/html/
         remote_src: yes
 
     - name: remove the jupiter-main directory
-      file: 
-        path: /var/www/html/jupiter-main.zip
+      file:
+        path: /var/www/html/jupiter-main
         state: absent
 
-    - name: remove the jupiter-main.zip folder
-      file: 
-        path: /var/www/html/jupiter-main.zip
+    - name: remove the main.zip file
+      file:
+        path: /var/www/html/main.zip
         state: absent
-   
-    - name:  start apache server, if not started
+
+    - name: start apache server, if not started
       ansible.builtin.service:
         enabled: yes
         name: httpd
         state: started
-
-        
