@@ -30,7 +30,7 @@
         creates: /var/www/html/jupiter-main
 
     - name: Copy files to web directory
-      ansible.builtin.shell:
+      ansible.builtin.command:
         cmd: cp -r /var/www/html/jupiter-main/* /var/www/html/
       when: "'/var/www/html/jupiter-main/' is exists"
 
