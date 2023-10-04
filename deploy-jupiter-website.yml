@@ -29,18 +29,17 @@
       ansible.builtin.unarchive:
         src: /var/www/html/jupiter-main.zip
         dest: /var/www/html
-        creates: /var/www/html/index.html 
         remote_src: yes
 
     - name: copy webfiles from the jupiter-main directory to the html directory
       copy: 
-        src: /var/www/html/jupiter-main.zip
+        src: /var/www/html/jupiter-main/
         dest: /var/www/html
         remote_src: yes
 
     - name: remove the jupiter-main directory
       file: 
-        path: /var/www/html/jupiter-main.zip
+        path: /var/www/html/jupiter-main
         state: absent
 
     - name: remove the jupiter-main.zip folder
