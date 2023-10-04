@@ -4,38 +4,31 @@
   become: yes
   tasks:
     - name: Update packages
-      dnf:
-        name: '*'
-        state: latest
+      command: yum update -y
 
     - name: Install Apache HTTP Server
-      dnf:
-        name: httpd
-        state: present
+      command: yum install -y httpd
 
     - name: Change directory
-      ansible.builtin.command:
-        cmd: cd /var/www/html
+      command: cd /var/www/html
 
     - name: Download Jupiter repository
-      ansible.builtin.get_url:
-        url: https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
-        dest: /var/www/html/main.zip
+      command: wget https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
 
     - name: Unzip Jupiter repository
-      ansible.builtin.unarchive:
-        src: /var/www/html/main.zip
-        dest: /var/www/html
-        remote_src: yes
-        creates: /var/www/html/jupiter-main
+      command: unzip main.zip
+      args:
+        chdir: /var/www/html
+      creates: /var/www/html/jupiter-main
 
     - name: Copy files to web directory
-      ansible.builtin.command:
-        cmd: cp -r /var/www/html/jupiter-main/* /var/www/html/
+      command: cp -r /var/www/html/jupiter-main/* /var/www/html/
+      args:
+        chdir: /var/www/html
       when: "'/var/www/html/jupiter-main/' is exists"
 
     - name: Remove temporary files
-      ansible.builtin.file:
+      file:
         path: "/var/www/html/{{ item }}"
         state: absent
       loop:
@@ -43,11 +36,7 @@
         - main.zip
 
     - name: Enable Apache HTTPd
-      systemd:
-        name: httpd
-        enabled: yes
+      command: systemctl enable httpd
 
     - name: Start Apache HTTPd
-      systemd:
-        name: httpd
-        state: started
+      command: systemctl start httpd
