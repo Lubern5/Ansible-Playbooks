@@ -1,46 +1,56 @@
 ---
-- name: Install and configure Apache HTTP server
+
+- name: deploy jupiter website
   hosts: all
   become: yes
+  become_user: root
+
   tasks:
-    - name: Update packages
-      command: yum update -y
+    - name: update ec2 instance
+      dnf:
+        name: "*"
+        state: latest
+        update_cache: yes
 
-    - name: Install Apache HTTP Server
-      command: yum install -y httpd
+    - name: install apache server
+      dnf:
+        name: httpd
+        state: latest
 
-    - name: Change directory
-      command: cd /var/www/html
+    - name: change directory to the html directory
+      shell: cd /var/www/html
 
-    - name: Download Jupiter repository
-      command: wget https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
-      register: download_result
-      changed_when: false  # Mark the task as unchanged even if the file already exists
+    - name: download web files from github
+      get_url:
+        url:  https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
+        dest: /var/www/html
 
-    - name: Unzip Jupiter repository
-      command: unzip main.zip
-      args:
-        chdir: /var/www/html
-      changed_when: download_result.rc == 0 and download_result.stdout.find('Archive:') == -1
+    - name: unzip the zip folder
+      ansible.builtin.unarchive:
+        src: /var/www/html/jupiter-main.zip
+        dest: /var/www/html
+        remote_src: yes
 
-    - name: Check if Jupiter directory exists
-      stat:
-        path: /var/www/html/jupiter-main
-      register: jupiter_dir_check
+    - name: copy webfiles from the jupiter-main directory to the html directory
+      copy: 
+        src: /var/www/html/jupiter-main.zip
+        dest: /var/www/html
+        remote_src: yes
 
-    - name: Copy files to web directory
-      command: cp -r /var/www/html/jupiter-main/* /var/www/html/
-      args:
-        chdir: /var/www/html
-      when: not jupiter_dir_check.stat.exists
-
-    - name: Remove temporary files
-      file:
-        path: "/var/www/html/{{ item }}"
+    - name: remove the jupiter-main directory
+      file: 
+        path: /var/www/html/jupiter-main.zip
         state: absent
-      loop:
-        - jupiter-main
-        - main.zip
 
-    - name: Enable Apache HTTPd
-      command: systemctl enable httpd
+    - name: remove the jupiter-main.zip folder
+      file: 
+        path: /var/www/html/jupiter-main.zip
+        state: absent
+   
+    - name:  start apache server, if not started
+      ansible.builtin.service:
+        enabled: yes
+        name: httpd
+        state: started
+
+        
