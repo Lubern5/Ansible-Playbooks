@@ -15,18 +15,13 @@
     - name: Download Jupiter repository
       command: wget https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
       register: download_result
-      ignore_errors: yes  # Ignore errors to allow handling the absence of the file
-
-    - name: Check if main.zip exists
-      stat:
-        path: /var/www/html/main.zip
-      register: main_zip_check
+      changed_when: false  # Mark the task as unchanged even if the file already exists
 
     - name: Unzip Jupiter repository
       command: unzip main.zip
       args:
         chdir: /var/www/html
-      when: download_result|failed == false and main_zip_check.stat.exists
+      changed_when: download_result.rc == 0 and download_result.stdout.find('Archive:') == -1
 
     - name: Check if Jupiter directory exists
       stat:
@@ -49,6 +44,3 @@
 
     - name: Enable Apache HTTPd
       command: systemctl enable httpd
-
-    - name: Start Apache HTTPd
-      command: systemctl start httpd
