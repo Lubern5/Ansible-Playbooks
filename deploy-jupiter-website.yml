@@ -31,10 +31,11 @@
         remote_src: yes
 
     - name: copy web files from the jupiter-main directory to the html directory
-      copy:
-        src: /var/www/html/jupiter-main/*
-        dest: /var/www/html/
-        remote_src: yes
+      ansible.builtin.command:
+        cmd: cp -r /var/www/html/jupiter-main/* /var/www/html/
+        args:
+          chdir: /var/www/html
+        creates: /var/www/html/index.html  # Assuming index.html exists in jupiter-main
 
     - name: remove the jupiter-main directory
       file:
