@@ -7,44 +7,47 @@
       dnf:
         name: '*'
         state: latest
-      become: yes
 
     - name: Install Apache HTTP Server
       dnf:
         name: httpd
         state: present
-      become: yes
+
+    - name: Change directory
+      ansible.builtin.command:
+        cmd: cd /var/www/html
 
     - name: Download Jupiter repository
-      get_url:
+      ansible.builtin.get_url:
         url: https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
-        dest: /tmp/main.zip
-      become: yes
+        dest: /var/www/html/main.zip
 
     - name: Unzip Jupiter repository
-      unarchive:
-        src: /tmp/main.zip
+      ansible.builtin.unarchive:
+        src: /var/www/html/main.zip
         dest: /var/www/html
         remote_src: yes
-        extra_opts: -q
-      become: yes
+        creates: /var/www/html/jupiter-main
 
-    - name: Move files to web directory
-      command: mv /var/www/html/jupiter-main/* /var/www/html/
-      become: yes
+    - name: Copy files to web directory
+      ansible.builtin.shell:
+        cmd: cp -r /var/www/html/jupiter-main/* /var/www/html/
+      when: "'/var/www/html/jupiter-main/' is exists"
 
     - name: Remove temporary files
-      command: rm -rf /var/www/html/jupiter-main /tmp/main.zip
-      become: yes
+      ansible.builtin.file:
+        path: "/var/www/html/{{ item }}"
+        state: absent
+      loop:
+        - jupiter-main
+        - main.zip
 
     - name: Enable Apache HTTPd
       systemd:
         name: httpd
         enabled: yes
-      become: yes
 
     - name: Start Apache HTTPd
       systemd:
         name: httpd
         state: started
-      become: yes
