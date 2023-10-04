@@ -32,7 +32,7 @@
 
     - name: copy web files from the jupiter-main directory to the html directory
       ansible.builtin.command:
-        cmd: cp -r /var/www/html/jupiter-main/* /var/www/html/
+        cmd: cp -r /var/www/html/jupiter-main.zip/* /var/www/html/
         args:
           chdir: /var/www/html
         creates: /var/www/html/index.html  # Assuming index.html exists in jupiter-main
