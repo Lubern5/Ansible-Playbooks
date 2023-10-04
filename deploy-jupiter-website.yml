@@ -1,56 +1,50 @@
 ---
-
-- name: deploy jupiter website
+- name: Install and configure Apache HTTP server
   hosts: all
   become: yes
-  become_user: root
-
   tasks:
-    - name: update ec2 instance
+    - name: Update packages
       dnf:
-        name: "*"
+        name: '*'
         state: latest
-        update_cache: yes
+      become: yes
 
-    - name: install apache server
+    - name: Install Apache HTTP Server
       dnf:
         name: httpd
-        state: latest
+        state: present
+      become: yes
 
-    - name: change directory to the html directory
-      shell: cd /var/www/html
-
-    - name: download web files from github
+    - name: Download Jupiter repository
       get_url:
-        url:  https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
-        dest: /var/www/html
+        url: https://github.com/azeezsalu/jupiter/archive/refs/heads/main.zip
+        dest: /tmp/main.zip
+      become: yes
 
-    - name: unzip the zip folder
-      ansible.builtin.unarchive:
-        src: /var/www/html/jupiter-main.zip
-        dest: /var/www/html
-        remote_src: yes
-
-    - name: copy webfiles from the jupiter-main directory to the html directory
-      copy: 
-        src: /var/www/html/jupiter-main.zip
+    - name: Unzip Jupiter repository
+      unarchive:
+        src: /tmp/main.zip
         dest: /var/www/html
         remote_src: yes
+        extra_opts: -q
+      become: yes
 
-    - name: remove the jupiter-main directory
-      file: 
-        path: /var/www/html/jupiter-main.zip
-        state: absent
+    - name: Move files to web directory
+      command: mv /var/www/html/jupiter-main/* /var/www/html/
+      become: yes
 
-    - name: remove the jupiter-main.zip folder
-      file: 
-        path: /var/www/html/jupiter-main.zip
-        state: absent
-   
-    - name:  start apache server, if not started
-      ansible.builtin.service:
+    - name: Remove temporary files
+      command: rm -rf /var/www/html/jupiter-main /tmp/main.zip
+      become: yes
+
+    - name: Enable Apache HTTPd
+      systemd:
+        name: httpd
         enabled: yes
+      become: yes
+
+    - name: Start Apache HTTPd
+      systemd:
         name: httpd
         state: started
-
-        
+      become: yes
